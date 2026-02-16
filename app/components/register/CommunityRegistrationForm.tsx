@@ -4,35 +4,54 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
 
-const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSd46byOxMNFTBneERnaI2nYazta21SZfsKHM-NPLAatSypJaQ/formResponse';
+const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSf1AlYVh-BPkoEGZD0VW5dICerKdqmJy6UAakVm2erk5VFTnQ/formResponse';
 
 const FIELD_IDS = {
-    firstName: 'entry.1631370767',
-    lastName: 'entry.1734465508',
-    email: 'entry.467974797',
-    phone: 'entry.1571272052',
-    organization: 'entry.118495462',
-    designation: 'entry.1209844656',
-    role: 'entry.570502303',
-    expertise: 'entry.280216515',
-    experience: 'entry.1689589001',
-    availability: 'entry.741100802',
-    motivation: 'entry.1948819728',
-    previousExperience: 'entry.1418235861'
+    firstName: 'entry.593456628',
+    lastName: 'entry.578124387',
+    email: 'entry.73629017',
+    phone: 'entry.901472441',
+    organization: 'entry.13081638',
+    designation: 'entry.113509055',
+    role: 'entry.1910960955',
+    expertise: 'entry.447712476',
+    experience: 'entry.1804307276',
+    availability: 'entry.1552014961',
+    motivation: 'entry.1878870176',
+    previousExperience: 'entry.1931770571'
 };
 
 export default function CommunityRegistrationForm() {
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    // Handle iframe load - this fires after Google Forms receives the data
-    const handleIframeLoad = () => {
-        // Set submitted to show success message
-        setSubmitted(true);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        
+        // Debug logging
+        console.log('📝 Submitting form data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        
+        setLoading(true);
+        
+        // Submit the form
+        form.submit();
+        
+        // Show success after delay
+        setTimeout(() => {
+            setLoading(false);
+            setSubmitted(true);
+        }, 2000);
     };
 
     return (
         <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            {/* Success Message - shown over the form */}
+            {/* Success Message */}
             {submitted && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -47,39 +66,49 @@ export default function CommunityRegistrationForm() {
                         Thank you for joining the Grapreneur community. We will review your application and get back to you soon.
                     </p>
                     <button
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => window.location.reload()}
                         className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors"
                     >
-                        Back to Home
+                        Submit Another Response
                     </button>
                 </motion.div>
             )}
 
-            {/* Form - always mounted, hidden when submitted */}
+            {/* Loading Overlay */}
+            {loading && (
+                <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex items-center justify-center z-20">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+                        <p className="text-slate-600 dark:text-slate-400">Submitting your application...</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Form */}
             <div className={submitted ? 'opacity-0 pointer-events-none' : ''}>
                 <div className="bg-slate-50 dark:bg-slate-950 px-8 py-6 border-b border-slate-200 dark:border-slate-800 text-center">
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Community Member Registration</h2>
                     <p className="text-slate-500 text-sm max-w-lg mx-auto">Join as a mentor, volunteer, or partner to support the next generation of entrepreneurs.</p>
                 </div>
 
-                {/* Hidden iframe to prevent redirect */}
+                {/* Hidden iframe */}
                 <iframe
                     name="hidden_iframe"
                     id="hidden_iframe"
                     style={{ display: 'none' }}
-                    onLoad={handleIframeLoad}
                 />
 
                 <form
                     action={FORM_ACTION}
                     method="POST"
                     target="hidden_iframe"
+                    onSubmit={handleSubmit}
                     className="p-8 space-y-8"
                 >
-
                     {/* Personal Info */}
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* First Name */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">First Name *</label>
                                 <input
@@ -89,6 +118,8 @@ export default function CommunityRegistrationForm() {
                                     className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
+
+                            {/* Last Name */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name *</label>
                                 <input
@@ -98,6 +129,8 @@ export default function CommunityRegistrationForm() {
                                     className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
+
+                            {/* Email */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address *</label>
                                 <input
@@ -107,12 +140,18 @@ export default function CommunityRegistrationForm() {
                                     className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
+
+                            {/* Phone */}
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number *</label>
                                 <input
                                     type="tel"
                                     name={FIELD_IDS.phone}
                                     required
+                                    pattern="[0-9]{10}"
+                                    maxLength={10}
+                                    placeholder="1234567890"
+                                    title="Please enter a valid 10 digit number"
                                     className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 />
                             </div>
@@ -122,19 +161,22 @@ export default function CommunityRegistrationForm() {
                     {/* Professional Info */}
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Organization</label>
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Organization *</label>
                             <input
                                 type="text"
                                 name={FIELD_IDS.organization}
+                                required
                                 placeholder="Company/Institution name"
                                 className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
+
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Designation/Role</label>
+                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Current Designation/Role *</label>
                             <input
                                 type="text"
                                 name={FIELD_IDS.designation}
+                                required
                                 placeholder="Your current job title"
                                 className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
@@ -177,12 +219,13 @@ export default function CommunityRegistrationForm() {
                                     className="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 >
                                     <option value="">Select experience range</option>
-                                    <option value="0-2 years">0-2 years</option>
-                                    <option value="3-5 years">3-5 years</option>
-                                    <option value="5-10 years">5-10 years</option>
-                                    <option value="10+ years">10+ years</option>
+                                    <option value="0 - 2 Years">0-2 years</option>
+                                    <option value="3 - 5 Years">3-5 years</option>
+                                    <option value="5 - 10 Years">5-10 years</option>
+                                    <option value="10 + Years">10+ years</option>
                                 </select>
                             </div>
+
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Time Availability</label>
                                 <select
@@ -210,6 +253,7 @@ export default function CommunityRegistrationForm() {
                                 placeholder="Tell us about your motivation to support young entrepreneurs"
                             />
                         </div>
+
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Previous Mentoring/Volunteering Experience</label>
                             <textarea
@@ -236,12 +280,14 @@ export default function CommunityRegistrationForm() {
                         </label>
                     </div>
 
+                    {/* Submit */}
                     <div className="space-y-4">
                         <button
                             type="submit"
-                            className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg flex items-center justify-center text-lg"
+                            disabled={loading}
+                            className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg flex items-center justify-center text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Submit Application <Send size={18} className="ml-2" />
+                            {loading ? 'Submitting...' : 'Submit Application'} <Send size={18} className="ml-2" />
                         </button>
 
                         <p className="text-center text-sm text-slate-500">
